@@ -179,40 +179,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # 配置工程日志
 import os  # 新增：导入 os 模块
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'},
-#         'simple': {'format': '%(levelname)s %(module)s %(lineno)d %(message)s'}
-#     },
-#     'filters': {
-#         # 修正：名称改为 require_debug_true，类对应调试模式
-#         'require_debug_true': {
-#             '()': 'django.utils.log.RequireDebugTrue',
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'INFO',
-#             'filters': ['require_debug_true'],  # 与 filters 名称一致
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple',
-#         },
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'filename': os.path.join(os.path.dirname(BASE_DIR),''),  # 依赖 os，已导入
-#             'maxBytes': 1024*1024*100,
-#             'backupCount': 10,
-#             'formatter': 'verbose',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console', 'file'],
-#             'propagate': True,
-#             'level': 'INFO',
-#         }
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'},
+        'simple': {'format': '%(levelname)s %(module)s %(lineno)d %(message)s'}
+    },
+    'filters': {
+        # 修正：名称改为 require_debug_true，类对应调试模式
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],  # 与 filters 名称一致
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(os.path.dirname(BASE_DIR), 'logs/meiduo.log'),  # 依赖 os，已导入
+            'maxBytes': 1024*1024*100,
+            'backupCount': 10,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'propagate': True,
+            'level': 'INFO',
+        }
+    }
+}
