@@ -14,3 +14,6 @@ class RegisterView(View):
         print(path) #可以打印出当前的路由地址
         return render(request,'register.html')
 
+    """实现用户注册的业务逻辑"""
+    def post(self,request):
+        pass

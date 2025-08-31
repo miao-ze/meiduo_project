@@ -89,7 +89,7 @@ TEMPLATES = [
     # 改成jinja2模板引擎
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [os.path.join(BASE_DIR_templates,'templates')],
+        'DIRS': [os.path.join(BASE_DIR_templates, 'meiduo_mall/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
