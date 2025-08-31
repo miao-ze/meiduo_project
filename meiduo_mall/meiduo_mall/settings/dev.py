@@ -13,12 +13,24 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
+
+from meiduo_mall.apps import users
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# print('关于base_dir的路径：',BASE_DIR)
+BASE_DIR_templates = Path(__file__).resolve().parent.parent.parent
 
 
+
+# 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
+# sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\本地git仓库\\meiduo_project\\meiduo_mall\\meiduo_mall\\apps') #但这个方式太复杂了，且不够灵活
+
+# 最终选择这个方式进行添加系统的导包路径（用BASE_DIR来进行导包）
+sys.path.insert(2,os.path.join(BASE_DIR,'apps'))
+# print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -35,13 +47,17 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.auth',          # Django认证系统位置：其包含认证框架的核心和默认的模型
+    'django.contrib.contenttypes',  # 是Django内容型系统，它允许权限与你创建的模型关联
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'meiduo_mall.apps.users',
+    # 进行子应用的注册（同样要知道导包路径）
+    # 'meiduo_mall.apps.users', #这个导包路径太复杂了，要进行简化
+    # 预期以后以这个方式进行导包
+    'users'
+
 ]
 
 MIDDLEWARE = [
@@ -73,7 +89,7 @@ TEMPLATES = [
     # 改成jinja2模板引擎
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR_templates,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,7 +108,7 @@ CACHES = {
     # 默认的存储信息地址
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://127.0.0.1:6379/1", # 192.168.0.107
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -100,7 +116,7 @@ CACHES = {
     # 专门用来管理session信息
     "session": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/2",
+            "LOCATION": "redis://127.0.0.1:6379/2", # 192.168.0.107
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }
@@ -187,24 +203,31 @@ import os  # 新增：导入 os 模块
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': False, #是否警用已经存在的日志器
+    # 1.0配置信息显示格式
     'formatters': {
+        # 1.1 verbose 详细显示的信息
         'verbose': {'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'},
+        # 1.2 simple 简单显示的信息
         'simple': {'format': '%(levelname)s %(module)s %(lineno)d %(message)s'}
     },
+    # 2.0 对日志进行过滤
     'filters': {
-        # 修正：名称改为 require_debug_true，类对应调试模式
+        # 2.1 django在debug格式下才输出日志
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
+    # 3.0 日志处理方法
     'handlers': {
+        # 3.1 向终端中输出日志
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],  # 与 filters 名称一致
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        # 3.2 向文件中输出日志
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -214,11 +237,19 @@ LOGGING = {
             'formatter': 'verbose',
         },
     },
+    # 4.0 日志器
     'loggers': {
+        # 4.1 定义了一个名为django的日志器
         'django': {
+            # 4.2 可以同时向终端和文件中输出日志
             'handlers': ['console', 'file'],
+            # 4.3 是否继续传递日志信息
             'propagate': True,
+            # 4.4 日志器接受的最低日志级别
             'level': 'INFO',
         }
     }
 }
+
+# 指定自定义的的用户模型类：语法--> '子应用.用户模型类' (直接忽略models.py)
+AUTH_USER_MODEL = "users.User"

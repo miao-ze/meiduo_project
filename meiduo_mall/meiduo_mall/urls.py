@@ -15,8 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from meiduo_mall.apps import users
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # 需求：我们的路由全部由子路由来进行匹配
+    # path('', include('meiduo_mall.apps.users.urls'),
+
+    # 使用namespace的方法二
+    path('', include(('meiduo_mall.apps.users.urls', 'users'), namespace='users')),
 ]
