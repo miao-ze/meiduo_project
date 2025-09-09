@@ -79,6 +79,11 @@
                             <input type="checkbox" name="allow" id="allow" v-model="allow" @change="check_allow">
                             <label>同意”美多商城用户使用协议“</label>
                             <span class="error_tip" v-show="error_allow">请勾选用户协议</span>
+
+                        {#            假设在在这里展示错误提示信息                #}
+                            {% if register_errmsg %}
+                            	<span class="error_tip">{{ register_errmsg }}</span>
+                            {% endif %}
                         </li>
 
                         <li class="reg_sub">

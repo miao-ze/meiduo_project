@@ -34,7 +34,7 @@ const app = Vue.createApp({
         check_username(){
             // 用户名是5-20个字符 [a-zA-Z0-9]{5:20}
             // 斜杠用于包裹正则的 “匹配模式”，明确告诉 JavaScript 引擎：“中间的内容是正则表达式，不是普通字符串”。
-            let re_name = /^[a-zA-Z0-9_-]{5,20}$/;
+            let re_name = /^[a-zA-Z0-9_-]{4,20}$/;
             if(re_name.test(this.username)){
                 // 匹配成功，不显示错误信息
                 this.error_name = false;
@@ -42,6 +42,24 @@ const app = Vue.createApp({
                 // 匹配失败返回错误信息
                 this.error_name_message = '请输入5-20个字符的用户名'
                 this.error_name = true;
+            }
+            // 判断用户名是否重估注册
+            if(this.error_name === false){ //只有当用户输入的用户名满足条件才回去判断
+                let url = '/usernames/' + this.username + '/count'
+                // 开始由前端发送ajax请求
+                axios.get(url,{responseType:'json'})
+                    // 成功时：
+                    .then(response=>{
+                        if(response.data.count === 1){
+                            this.error_name_message = '用户名以存在';
+                            this.error_name = true;
+                        }else{
+                            this.error_name = false
+                        }
+                    })
+                .catch(error=>{
+                    console.log('发送失败',error.response);
+                })
             }
         },
         // 4.2 校验密码

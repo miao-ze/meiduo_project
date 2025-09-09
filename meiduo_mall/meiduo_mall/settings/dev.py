@@ -113,7 +113,7 @@ CACHES = {
     # 默认的存储信息地址
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1", # 192.168.0.107
+        "LOCATION": "redis://127.0.0.1:6379/0", # 192.168.0.107
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -121,7 +121,7 @@ CACHES = {
     # 专门用来管理session信息
     "session": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/2", # 192.168.0.107
+            "LOCATION": "redis://127.0.0.1:6379/1", # 192.168.0.107
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }

@@ -6,8 +6,20 @@ from django.views import View
 from django import http
 import re
 from meiduo_mall.apps.users.models import User
-
+from django.contrib.auth import login
+from utils.response_code import RETCODE
 # Create your views here.
+
+
+
+class UsernameCountView(View):
+    """判断用户名是否重复"""
+    def get(self, request,username):
+        # 1.接受和校验参数：此步骤在编写路由时就已经做好了（因为路由用了正则来进行匹配接受）
+        # 2.实现主体业务逻辑：使用username查询对应的记录的条数
+        count = User.objects.filter(username=username).count()
+        # 3.返回结果：json数据返回,注意：HttpResponse（字典格式）
+        return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok','count':count})
 
 class RegisterView(View):
 
@@ -53,10 +65,12 @@ class RegisterView(View):
             return http.HttpResponseForbidden('请勾选用户协议')
         # 3.保存注册数据（将注册数据保存到mysql数据库中）：是注册业务的核心
         try:
-            User.objects.create_user(username=username,password=password,mobile=mobile)
+           user =  User.objects.create_user(username=username,password=password,mobile=mobile)
         except DatabaseError:
             # 运行到此：表示注册失败
             return render(request,'register_text（miao）.html',{'register_errmsg':'注册失败'})
+        # 进行状态保持:login其封装了写入session的操作login(request,用户对象)
+        login(request,user)
         # 4.响应结果
         # 相当于redirect('/')
         return redirect(reverse('contents:index'))
