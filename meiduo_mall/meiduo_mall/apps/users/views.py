@@ -1,6 +1,6 @@
 from Lib.http.client import HTTPResponse
 from django.db import DatabaseError
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django import http
@@ -58,5 +58,5 @@ class RegisterView(View):
             # 运行到此：表示注册失败
             return render(request,'register_text（miao）.html',{'register_errmsg':'注册失败'})
         # 4.响应结果
-        return http.HttpResponse('注册成功，重定向到首页！')
-        pass
+        # 相当于redirect('/')
+        return redirect(reverse('contents:index'))
