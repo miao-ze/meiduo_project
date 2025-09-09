@@ -30,7 +30,7 @@
     <!-- 2.2右边内容重点表单数据（下方） -->
             <div class="reg_form clearfix" >
                 <!-- 为了确定表单确实填写完成了，提供一个递交事件,同时为了不然数据有延迟，再提供一个v-cloak:(只有当变量渲染完成，才会显示表单) -->
-                <form action="post" class="register_form" @submit="on_submit" v-cloak>
+                <form method="post" class="register_form" @submit="on_submit" v-cloak>
                     <!-- 因为是post方法，所以要设置csrf认证 -->
                      {{ csrf_input }}
                     <ul>
@@ -104,6 +104,6 @@
     </div>
 </div>
 
-<script src="{{ static('js/register_test.js') }}"></script>
+<script src="{{ static('js/register_test（miao）.js') }}"></script>
 </body>
 </html>

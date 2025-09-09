@@ -56,7 +56,7 @@ const app = Vue.createApp({
         // 4.3 检验确认密码
         check_password2(){
             let re_password2 = /^[a-zA-Z0-9_-]{5,20}$/;
-            if(re_password2.test(this.password2) && this.password2 === this.password2){
+            if(re_password2.test(this.password2) && this.password2 === this.password){
                 this.error_password2 = false;
             }else {
                 this.error_password2 = true;

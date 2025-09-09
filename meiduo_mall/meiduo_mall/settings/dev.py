@@ -23,16 +23,16 @@ from meiduo_mall.apps import users
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print('关于base_dir的路径：',BASE_DIR)
 
-print('BASE_DIR的真实路径：', BASE_DIR)
+print('BASE_DIR的路径：', BASE_DIR)
 
-print('dirname(BASE_DIR)的真实路径：', dirname(BASE_DIR))
+print('dirname(BASE_DIR)的路径：', dirname(BASE_DIR))
 
 
 # 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
 # sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\本地git仓库\\meiduo_project\\meiduo_mall\\meiduo_mall\\apps') #但这个方式太复杂了，且不够灵活
 
 # 最终选择这个方式进行添加系统的导包路径（用BASE_DIR来进行导包）
-sys.path.insert(2,os.path.join(BASE_DIR,'apps'))
+sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 
 # print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production
@@ -44,7 +44,7 @@ SECRET_KEY = 'django-insecure-+h_6s0brb#-*2h)+sodb^faiq84g)wfr35r@!dq1j1ts((g%ur
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1","192.168.11.226"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     # 进行子应用的注册（同样要知道导包路径）
     # 'meiduo_mall.apps.users', #这个导包路径太复杂了，要进行简化
     # 预期以后以这个方式进行导包
-    'users'
+    'users',
+    'contents',
 
 ]
 
