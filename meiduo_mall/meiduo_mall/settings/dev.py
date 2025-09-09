@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 import sys
+from os.path import dirname
 from pathlib import Path
 
 from meiduo_mall.apps import users
@@ -21,8 +22,10 @@ from meiduo_mall.apps import users
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print('关于base_dir的路径：',BASE_DIR)
-BASE_DIR_templates = Path(__file__).resolve().parent.parent.parent
 
+print('BASE_DIR的真实路径：', BASE_DIR)
+
+print('dirname(BASE_DIR)的真实路径：', dirname(BASE_DIR))
 
 
 # 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
@@ -30,6 +33,7 @@ BASE_DIR_templates = Path(__file__).resolve().parent.parent.parent
 
 # 最终选择这个方式进行添加系统的导包路径（用BASE_DIR来进行导包）
 sys.path.insert(2,os.path.join(BASE_DIR,'apps'))
+
 # print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -40,7 +44,7 @@ SECRET_KEY = 'django-insecure-+h_6s0brb#-*2h)+sodb^faiq84g)wfr35r@!dq1j1ts((g%ur
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1","192.168.11.226"]
 
 
 # Application definition
@@ -89,7 +93,7 @@ TEMPLATES = [
     # 改成jinja2模板引擎
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [os.path.join(BASE_DIR_templates, 'meiduo_mall/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -148,6 +152,15 @@ DATABASES = {
             'PASSWORD': '1901420817',
             'NAME': 'meiduo',
             'charset': 'utf8',
+
+            # 'ENGINE': 'django.db.backends.mysql',
+
+            # 'host': '192.168.11.226',
+            # 'PORT': 3306,
+            # 'USER': 'root',
+            # 'PASSWORD': '123456789',
+            # 'NAME': 'meiduo',
+            # 'charset': 'utf8',
         }
 }
 

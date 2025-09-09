@@ -20,6 +20,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.13 virtualenv at C:\Users\wyys2\Desktop\本地git仓库\meiduo_project\.venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="vue" level="application" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
@@ -29,7 +30,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/meiduo_mall/templates" />
+        <option value="$MODULE_DIR$/meiduo_mall/meiduo_mall/templates" />
       </list>
     </option>
   </component>

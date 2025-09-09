@@ -12,7 +12,7 @@ class RegisterView(View):
         """提供用户注册页面"""
         path = reverse('users:register') #注意：不要有空格
         print(path) #可以打印出当前的路由地址
-        return render(request,'register.html')
+        return render(request,'register_text.html')
 
     """实现用户注册的业务逻辑"""
     def post(self,request):

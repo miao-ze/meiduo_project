@@ -14,7 +14,7 @@
     <div class="register_con">
         <div class="l_con fl">
             <a href="index.html" class="reg_logo"><img src="../static/images/logo.png"></a>
-            <div class="reg_slogan">商品美 · 种类多 · 欢迎光临</div>
+            <div class="reg_slogan">商品美 · 种类多 · 欢迎光临-缪泽平为你服务</div>
             <div class="reg_banner"></div>
         </div>
         <div class="r_con fr">
@@ -30,6 +30,12 @@
                             <label>用户名:</label>
                             <input type="text" v-model="username" @blur="check_username" name="username" id="user_name">
                             <span class="error_tip" v-show="error_name">[[ error_name_message ]]</span>
+
+{#这是因为 Vue 模板语法的分隔符被修改为双中括号 [[ ]]，以避免与 Jinja2 模板的默认分隔符 {{ }} 冲突。具体原因和解决方法如下：
+{#核心矛盾：模板语法冲突
+{#Jinja2（后端模板引擎）和 Vue（前端框架）默认都使用 {{ }} 作为变量插值的分隔符。
+如果直接在 Jinja2 模板中写 Vue 的 {{ }}，后端会先把 {{ }} 解析为 Jinja2 变量，导致 Vue 无法正常渲染。#}
+
                         </li>
                         <li>
                             <label>密码:</label>
@@ -38,8 +44,7 @@
                         </li>
                         <li>
                             <label>确认密码:</label>
-                            <input type="password" v-model="password2" @blur="check_password2" name="password2"
-                                   id="cpwd">
+                            <input type="password" v-model="password2" @blur="check_password2" name="password2" id="cpwd">
                             <span class="error_tip" v-show="error_password2">两次输入的密码不一致</span>
                         </li>
                         <li>
@@ -86,7 +91,7 @@
             <span>|</span>
             <a href="#">友情链接</a>
         </div>
-        <p>CopyRight © 2016 北京美多商业股份有限公司 All Rights Reserved</p>
+        <p>CopyRight © 2016 江西美多商业股份有限公司（缪泽平） All Rights Reserved</p>
         <p>电话：010-****888 京ICP备*******8号</p>
     </div>
 </div>
