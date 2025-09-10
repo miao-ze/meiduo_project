@@ -23,7 +23,8 @@ urlpatterns = [
 
     # 使用namespace的方法二
     path('', include(('meiduo_mall.apps.users.urls', 'users'), namespace='users')),
+    path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
 
     # 首页信息：这里的namespace使用方法一的方式来进行
-    path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
+    # path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
 ]

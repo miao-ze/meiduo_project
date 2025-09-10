@@ -73,4 +73,6 @@ class RegisterView(View):
         login(request,user)
         # 4.响应结果
         # 相当于redirect('/')
+        path = reverse('contents:index')
+        print('首页的路由地址：',path)
         return redirect(reverse('contents:index'))
