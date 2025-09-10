@@ -11,14 +11,19 @@ from utils.response_code import RETCODE
 # Create your views here.
 
 
-
+"""判断用户名是否重复"""
 class UsernameCountView(View):
-    """判断用户名是否重复"""
     def get(self, request,username):
         # 1.接受和校验参数：此步骤在编写路由时就已经做好了（因为路由用了正则来进行匹配接受）
         # 2.实现主体业务逻辑：使用username查询对应的记录的条数
         count = User.objects.filter(username=username).count()
         # 3.返回结果：json数据返回,注意：HttpResponse（字典格式）
+        return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok','count':count})
+
+"""判断手机号是否重复"""
+class MobileCountView(View):
+    def get(self, request,mobile):
+        count = User.objects.filter(mobile=mobile).count()
         return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok','count':count})
 
 class RegisterView(View):

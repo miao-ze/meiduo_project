@@ -89,6 +89,24 @@ const app = Vue.createApp({
                 this.error_mobile_message = '请输入正确的手机号码'
                 this.error_mobile = true;
             }
+         // 判断手机号是否重复注册
+            if(this.error_mobile === false){ //只有当用户输入的用户名满足条件才回去判断
+                let url_mobile = '/mobiles/' + this.mobile + '/count'
+                // 开始由前端发送ajax请求
+                axios.get(url_mobile,{responseType:'json'})
+                    // 成功时：
+                    .then(response=>{
+                        if(response.data.count === 1){
+                            this.error_mobile_message = '手机号已存在';
+                            this.error_mobile = true;
+                        }else{
+                            this.error_mobile = false
+                        }
+                    })
+                .catch(error=>{
+                    console.log('发送失败',error.response);
+                })
+            }
         },
         // 4.5校验是否勾选协议
         check_allow(){
