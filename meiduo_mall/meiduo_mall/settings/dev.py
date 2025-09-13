@@ -60,8 +60,9 @@ INSTALLED_APPS = [
     # 进行子应用的注册（同样要知道导包路径）
     # 'meiduo_mall.apps.users', #这个导包路径太复杂了，要进行简化
     # 预期以后以这个方式进行导包
-    'users',
-    'contents',
+    'users',     #注册用户模块
+    'contents',  #注册首页广告模块
+    'verifications', #注册图形验证模块
 
 ]
 
@@ -110,7 +111,7 @@ TEMPLATES = [
 
 # 创建Redis数据库来使用缓存
 CACHES = {
-    # 默认的存储信息地址
+    # 默认的存储信息地址(0)
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/0", # 192.168.0.107
@@ -118,10 +119,18 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    # 专门用来管理session信息
+    # 专门用来管理session信息(1)
     "session": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": "redis://127.0.0.1:6379/1", # 192.168.0.107
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+    # 专门用来保存图形验证码(2)
+    "verify_code": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/2", # 192.168.0.107
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }
@@ -131,7 +140,6 @@ CACHES = {
 # 设置第二个专门用来存储session信息
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
-
 
 WSGI_APPLICATION = 'meiduo_mall.wsgi.application'
 

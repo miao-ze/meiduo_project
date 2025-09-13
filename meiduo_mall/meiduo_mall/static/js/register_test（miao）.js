@@ -15,21 +15,41 @@ const app = Vue.createApp({
             password2:'',
             mobile:'',
             allow:'',
+            // 图形验证码路径初始化:肤质的时机：1.页面加载完（使用vue的生命周期）2.点击时
+            image_code_url:'',
+            uuid:'',
+            image_code:'',
+
             // 2. v-show 部分
             error_name:false,
             error_password:false,
             error_password2:false,
             error_mobile:false,
             error_allow:false,
+            // 图片
+            error_image_code:false,
+
             // 3. error_message
             error_name_message:'',
             error_mobile_message:'',
+            error_image_code_message:''
 
         }
 
         },
+    // 设计生命周期
+    mounted(){ //生成图形验证码（可以进行封装函数）
+        this.generate_image_code()
+    },
             // 4. 事件部分
     methods: {
+        // 设计封装函数
+        generate_image_code(){
+            // 使用common.js中的方法来生成uuid
+            this.uuid = generateUUID()
+            // 这个地址指向的是后端逻辑调用apps/verifications/libs/captcha/captcha.py文件生成的图片
+            this.image_code_url = 'image_codes/'+this.uuid + '/'
+        },
         // 4.1 校验用户名
         check_username(){
             // 用户名是5-20个字符 [a-zA-Z0-9]{5:20}
@@ -108,6 +128,15 @@ const app = Vue.createApp({
                 })
             }
         },
+        // 4.6 校验图形验证码
+        check_image_code(){
+            if (this.image_code.length !== 4){
+                this.error_image_code_message = '请填写图形验证码'
+                this.error_image_code = true;
+            }else{
+                this.error_image_code = false;
+            }
+        },
         // 4.5校验是否勾选协议
         check_allow(){
             if(this.allow){
@@ -124,10 +153,11 @@ const app = Vue.createApp({
             this.check_password2()
             this.check_mobile()
             this.check_allow()
+            this.check_image_code()
 
             // 只要有一个数据为true，即：有错误信息得到了展示，就要阻止表单提交
             if(this.error_name === true || this.error_password === true ||
-                this.error_password2 === true || this.error_mobile === true || this.error_allow === true){
+                this.error_password2 === true || this.error_mobile === true || this.error_allow === true || this.error_image_code === true){
                 window.event.returnValue = false;
             }
         },

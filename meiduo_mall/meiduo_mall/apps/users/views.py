@@ -8,7 +8,7 @@ import re
 from meiduo_mall.apps.users.models import User
 from django.contrib.auth import login
 from utils.response_code import RETCODE
-# Create your views here.
+
 
 
 """判断用户名是否重复"""

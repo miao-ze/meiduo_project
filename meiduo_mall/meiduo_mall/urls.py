@@ -16,15 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # 使用namespace的方法二
+    # user
     path('', include(('meiduo_mall.apps.users.urls', 'users'), namespace='users')),
+    # contents：首页信息
     path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
-
-    # 首页信息：这里的namespace使用方法一的方式来进行
-    # path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
+    # verifications
+    path('', include('meiduo_mall.apps.verifications.urls')),
 ]
