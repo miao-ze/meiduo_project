@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     # 预期以后以这个方式进行导包
     'users',
     'contents',
+    'verifications',
 
 ]
 
@@ -125,7 +126,16 @@ CACHES = {
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }
-        }
+        },
+    # 验证码
+    'verify_code':{
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/2", # 192.168.0.107
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+    }
+
 }
 
 # 设置第二个专门用来存储session信息
@@ -140,10 +150,6 @@ WSGI_APPLICATION = 'meiduo_mall.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     # 改为mysql数据库
     'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -153,15 +159,6 @@ DATABASES = {
             'PASSWORD': '1901420817',
             'NAME': 'meiduo',
             'charset': 'utf8',
-
-            # 'ENGINE': 'django.db.backends.mysql',
-
-            # 'host': '192.168.11.226',
-            # 'PORT': 3306,
-            # 'USER': 'root',
-            # 'PASSWORD': '123456789',
-            # 'NAME': 'meiduo',
-            # 'charset': 'utf8',
         }
 }
 

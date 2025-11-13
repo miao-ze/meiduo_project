@@ -22,8 +22,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # 使用namespace的方法二
+    # users
     path('', include(('meiduo_mall.apps.users.urls', 'users'), namespace='users')),
+    # contents
     path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
+    # verifications
+    path('',include('meiduo_mall.apps.verifications.urls',namespace='verifications')),
 
     # 首页信息：这里的namespace使用方法一的方式来进行
     # path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),

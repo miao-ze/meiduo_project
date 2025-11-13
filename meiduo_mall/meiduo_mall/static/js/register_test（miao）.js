@@ -15,21 +15,66 @@ const app = Vue.createApp({
             password2:'',
             mobile:'',
             allow:'',
+            image_code:'',
+            image_code_url:'',
+            uuid:'',
+            sms_code_tip:'获取短信验证码',
             // 2. v-show 部分
             error_name:false,
             error_password:false,
             error_password2:false,
             error_mobile:false,
             error_allow:false,
+            error_image_code:false,
             // 3. error_message
             error_name_message:'',
             error_mobile_message:'',
+            error_image_code_message:''
 
         }
 
         },
+    mounted(){
+        // 生成图形验证码
+        this.generate_image_code()
+    },
             // 4. 事件部分
     methods: {
+        // 发送短信验证码
+        send_sms_code(){
+            let url = '/sms_codes/'+this.mobile+'/?image_code='+this.image_code+'&uuid='+this.uuid
+            axios.get(url,{responseType:'json'})
+            .then(response=>{
+                if(response.data.code === '0'){
+                    // 显示倒计时60秒效果
+                    let num =60
+                    alert(response.data.sms_code)
+                    let t =setInterval(()=>{
+                        if(num === 1){//倒计时即将结束
+                            // 停止回调函数的执行
+                            clearInterval(t)
+                            // 还原sms_code_tip的文字，并重新生成图形验证码
+                            this.sms_code_tip = '获取短信验证码'
+                            this.generate_image_code()
+                        }else{
+                            num -= 1;
+                            this.sms_code_tip = num + '秒'
+                        }
+                    },1000)
+                } else{
+                    if(response.data.code === '4001'){
+                        // 图形验证码有误
+                        this.error_image_code_message = response.data.errmsg
+                    }
+                }
+            })
+            .catch(error=>{console.log(error.response)})
+        },
+        // 生成图形验证码的方法:进行封装
+        generate_image_code(){
+            this.uuid = generateUUID();
+            this.image_code_url = '/image_codes/'+ this.uuid +'/';
+        },
         // 4.1 校验用户名
         check_username(){
             // 用户名是5-20个字符 [a-zA-Z0-9]{5:20}
@@ -82,7 +127,7 @@ const app = Vue.createApp({
         },
         // 4.4 校验手机号
         check_mobile(){
-            let re_mobile = /^[1-9]{2}[0-9]{9}$/
+            let re_mobile = /^1[3-9]\d{9}$/
             if(re_mobile.test(this.mobile)){
                 this.error_mobile = false;
             }else {
@@ -106,6 +151,15 @@ const app = Vue.createApp({
                 .catch(error=>{
                     console.log('发送失败',error.response);
                 })
+            }
+        },
+        // 校验图形验证码
+        check_image_code(){
+            if (this.image_code.length !== 4){
+                this.error_image_code_message = '请输入图形验证码'
+                this.error_image_code = true;
+            }else{
+                this.error_image_code = false;
             }
         },
         // 4.5校验是否勾选协议

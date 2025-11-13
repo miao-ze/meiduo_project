@@ -63,7 +63,7 @@ class RegisterView(View):
         if password != password2:
             return http.HttpResponseForbidden('再次输入的密码不一致')
         # 2.5 判断手机号是否合法
-        if not re.match('^[1-9]{2}[0-9]{9}$',mobile):
+        if not re.match(r'^1[3-9]\d{9}$',mobile):
             return http.HttpResponseForbidden('请输入正确的手机号')
         # 2.6 判断用户是否勾选了协议
         if allow != 'on': #注意在这里后端返回的是on，所以用on来进行判断
