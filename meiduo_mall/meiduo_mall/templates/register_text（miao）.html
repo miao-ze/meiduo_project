@@ -3,90 +3,77 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>美多商城-注册</title>
+    <title>多多商城-注册</title>
     <link rel="stylesheet" type="text/css" href="{{ static('css/reset.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static('css/main.css') }}">
-    {# 引入Vue3.js   #}
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript" src="{{ static('js/vue-2.5.16.js') }}"></script>
     <script type="text/javascript" src="{{ static('js/axios-0.18.0.min.js') }}"></script>
 </head>
-
 <body>
-{#创建div盒子标签设置id为app#}
 <div id="app">
-    <!-- 1.左边内容 -->
     <div class="register_con">
         <div class="l_con fl">
-            <a href="index.html" class="reg_logo"><img src="../static/images/logo.png"></a>
+            <a href="{{ url('contents:index') }}" class="reg_logo"><img src="{{ static('images/logo.png') }}"></a>
             <div class="reg_slogan">商品美 · 种类多 · 欢迎光临</div>
             <div class="reg_banner"></div>
         </div>
-    <!-- 2.1右边内容（上方） -->
         <div class="r_con fr">
             <div class="reg_title clearfix">
                 <h1>用户注册</h1>
-                <a href="login.html">登录</a>
+                <a href="#">登录</a>
             </div>
-    <!-- 2.2右边内容重点表单数据（下方） -->
-            <div class="reg_form clearfix" >
-                <!-- 为了确定表单确实填写完成了，提供一个递交事件,同时为了不然数据有延迟，再提供一个v-cloak:(只有当变量渲染完成，才会显示表单) -->
+            <div class="reg_form clearfix">
                 <form method="post" class="register_form" @submit="on_submit" v-cloak>
-                    <!-- 因为是post方法，所以要设置csrf认证 -->
-                     {{ csrf_input }}
+                    {{ csrf_input }}
                     <ul>
                         <li>
-                            <label for="username">用户名：</label>
-                            <!-- 绑定blur事件对v-model中的数据进行校验 -->
-                            <input type="text" name="username" id="username" v-model="username" @blur="check_username">
-                            <!-- 相应校验结果，根据不同结果来进行展示用v-show (有两种错误提示信息，即：是动态变化的) -->
-                            <span class="error_tip" v-show="error_name">[[ error_name_message ]]</span>
+                            <label>用户名:</label>
+                            <input type="text" name="username" v-model="username" @blur="check_username" id="user_name">
+                            <span class="error_tip" v-show="error_username">[[ error_username_msg ]]</span>
                         </li>
-
                         <li>
-                            <label for="password"> 密码：</label>
-                            <input type="password" name="password" id="pwd" v-model="password" @blur="check_password">
+                            <label>密码:</label>
+                            <input type="password" name="password" v-model="password" @blur="check_password" id="pwd">
                             <span class="error_tip" v-show="error_password">请输入8-20位的密码</span>
                         </li>
-
                         <li>
-                            <label for="check_password">确认密码：</label>
-                            <input type="password" name="password2" id="password2" v-model="password2" @blur="check_password2">
-                            <span class="error_tip" v-show="error_password2">前后两次密码输入不一致</span>
+                            <label>确认密码:</label>
+                            <input type="password" name="confirm_pwd" v-model="confirm_pwd" @blur="check_confirm_pwd"
+                                   id="cpwd">
+                            <span class="error_tip" v-show="error_confirm_pwd">两次输入的密码不一致</span>
                         </li>
-
                         <li>
-                            <label for="mobile">手机号：</label>
-                            <input type="text" name="mobile" id="mobile" v-model="mobile" @blur="check_mobile">
-                            <!-- 和用户名一样，有两种错误提示信息，所以用模板语法 -->
-                            <span class="error_tip" v-show="error_mobile">[[ error_mobile_message ]]</span>
+                            <label>手机号:</label>
+                            <input type="text" name="mobile" v-model="mobile" @blur="check_mobile" id="phone">
+                            <span class="error_tip" v-show="error_mobile">[[ error_mobile_msg ]]</span>
                         </li>
-
                         <li>
                             <label>图形验证码:</label>
-                            <input type="text" name="image_code"id="pic_code" v-model="image_code" class="msg_input" @blur="check_image_code">
-                            <img :src="image_code_url" alt="图形验证码" class="pic_code" @click="generate_image_code">
-                            <span class="error_tip" v-show="error_image_code">[[ error_image_code_mssage ]]</span>
+                            <input type="text" v-model="image_code" @blur="check_image_code" id="pic_code"
+                                   class="msg_input">
+                            <img :src="image_code_url" @click="generate_image_code" alt="图形验证码" class="pic_code">
+                            <span class="error_tip" v-show="error_image_code">[[ error_image_code_msg ]]</span>
                         </li>
 
                         <li>
                             <label>短信验证码:</label>
-                            <input type="text" name="sms_code" id="msg_code" class="msg_input">
+                            <input type="text" v-model="sms_code" @blur="check_sms_code" name="sms_code" id="msg_code"
+                                   class="msg_input">
                             <a @click="send_sms_code" class="get_msg_code">[[ sms_code_tip ]]</a>
-                            <span class="error_tip">请填写短信验证码</span>
+                            <span class="error_tip" v-show="error_sms_code">[[ error_sms_code_message ]]</span>
                         </li>
 
                         <li class="agreement">
-                            <!-- 此处用change事件，因为这里是选项框，因为类型是checkout所以v-model绑定的是一个布尔类型的变量 -->
-                            <input type="checkbox" name="allow" id="allow" v-model="allow" @change="check_allow">
-                            <label>同意”美多商城用户使用协议“</label>
+                            <input type="checkbox" name="allow" v-model="allow" @change="check_allow" id="allow">
+                            <label>同意”多多商城用户使用协议“</label>
                             <span class="error_tip" v-show="error_allow">请勾选用户协议</span>
 
-                        {#            假设在在这里展示错误提示信息                #}
-                            {% if register_errmsg %}
-                            	<span class="error_tip">{{ register_errmsg }}</span>
+                            {# 注册错误信息展示 #}
+                            {% if sms_code_errmsg %}
+                                <span class="error_tip">{{ sms_code_errmsg }}</span>
                             {% endif %}
-                        </li>
 
+                        </li>
                         <li class="reg_sub">
                             <input type="submit" value="注 册">
                         </li>
@@ -105,11 +92,11 @@
             <span>|</span>
             <a href="#">友情链接</a>
         </div>
-        <p>CopyRight © 2016 北京美多商业股份有限公司 All Rights Reserved</p>
+        <p>CopyRight © 2016 北京多多商业股份有限公司 All Rights Reserved</p>
         <p>电话：010-****888 京ICP备*******8号</p>
     </div>
 </div>
-<script src="{{ static('js/common.js') }}"></script>
-<script src="{{ static('js/register_test（miao）.js') }}"></script>
+<script type="text/javascript" src="{{ static('js/common.js') }}"></script>
+<script type="text/javascript" src="{{ static('js/register_test（miao）.js') }}"></script>
 </body>
 </html>

@@ -1,191 +1,225 @@
-// 此处我选择的是vue3的导入方法
+let vm = new Vue({
+    el: "#app",
 
-// 创建vue应用
-// const {createApp} = Vue
-const app = Vue.createApp({
-    el: '#app',
-    // 修改vue的语法
-    delimiters: ['[[',']]'],
+    // 修改Vue读取变量的模板语法
+    delimiters: ['[[', ']]'],
 
-    data(){
-        return {
-            // 1. v-model 部分
-            username:'',
-            password:'',
-            password2:'',
-            mobile:'',
-            allow:'',
-            image_code:'',
-            image_code_url:'',
-            uuid:'',
-            sms_code_tip:'获取短信验证码',
-            // 2. v-show 部分
-            error_name:false,
-            error_password:false,
-            error_password2:false,
-            error_mobile:false,
-            error_allow:false,
-            error_image_code:false,
-            // 3. error_message
-            error_name_message:'',
-            error_mobile_message:'',
-            error_image_code_message:''
+    data: {
+        // v-model
+        uuid: '',
+        image_code_url: '',
+        username: '',
+        password: '',
+        confirm_pwd: '',
+        image_code: '',
+        mobile: '',
+        sms_code: '',
+        sms_code_tip: '获取短信验证码',
+        send_flag: false,   // 短信发送标记
+        register_errmsg: '',
+        allow: false,
 
-        }
+        // v-show
+        error_username: false,
+        error_password: false,
+        error_confirm_pwd: false,
+        error_mobile: false,
+        error_allow: false,
+        error_image_code: false,
+        error_sms_code: false,
 
-        },
-    mounted(){
-        // 生成图形验证码
-        this.generate_image_code()
+        // 控制展示注册时的错误信息
+        show_register_errmsg: false,
+
+        // error_msg
+        error_username_msg: '',
+        error_mobile_msg: '',
+        error_image_code_msg: '',
+        error_sms_code_message: '',
+
     },
-            // 4. 事件部分
+
+    // 页面加载完成后执行
+    mounted() {
+        // 生成图形验证码
+        this.generate_image_code();
+    },
+
     methods: {
-        // 发送短信验证码
-        send_sms_code(){
-            let url = '/sms_codes/'+this.mobile+'/?image_code='+this.image_code+'&uuid='+this.uuid
-            axios.get(url,{responseType:'json'})
-            .then(response=>{
-                if(response.data.code === '0'){
-                    // 显示倒计时60秒效果
-                    let num =60
-                    alert(response.data.sms_code)
-                    let t =setInterval(()=>{
-                        if(num === 1){//倒计时即将结束
-                            // 停止回调函数的执行
-                            clearInterval(t)
-                            // 还原sms_code_tip的文字，并重新生成图形验证码
-                            this.sms_code_tip = '获取短信验证码'
-                            this.generate_image_code()
-                        }else{
-                            num -= 1;
-                            this.sms_code_tip = num + '秒'
-                        }
-                    },1000)
-                } else{
-                    if(response.data.code === '4001'){
-                        // 图形验证码有误
-                        this.error_image_code_message = response.data.errmsg
-                    }
-                }
-            })
-            .catch(error=>{console.log(error.response)})
-        },
-        // 生成图形验证码的方法:进行封装
-        generate_image_code(){
+        generate_image_code() {
+            // 生成UUID。generateUUID() : 封装在common.js文件中，需要提前引入
             this.uuid = generateUUID();
-            this.image_code_url = '/image_codes/'+ this.uuid +'/';
+            // 拼接图形验证码请求地址
+            this.image_code_url = "/image_codes/" + this.uuid + "/";
+
         },
-        // 4.1 校验用户名
-        check_username(){
-            // 用户名是5-20个字符 [a-zA-Z0-9]{5:20}
-            // 斜杠用于包裹正则的 “匹配模式”，明确告诉 JavaScript 引擎：“中间的内容是正则表达式，不是普通字符串”。
-            let re_name = /^[a-zA-Z0-9_-]{4,20}$/;
-            if(re_name.test(this.username)){
-                // 匹配成功，不显示错误信息
-                this.error_name = false;
-            }else{
-                // 匹配失败返回错误信息
-                this.error_name_message = '请输入5-20个字符的用户名'
-                this.error_name = true;
+        check_username() {
+            let re = /^[a-zA-Z0-9_-]{5,20}$/;
+            if (re.test(this.username)) {
+                this.error_username = false;
+            } else {
+                this.error_username_msg = '请输入5-20个字符的用户名';
+                this.error_username = true;
             }
-            // 判断用户名是否重估注册
-            if(this.error_name === false){ //只有当用户输入的用户名满足条件才回去判断
-                let url = '/usernames/' + this.username + '/count'
-                // 开始由前端发送ajax请求
-                axios.get(url,{responseType:'json'})
-                    // 成功时：
-                    .then(response=>{
-                        if(response.data.count === 1){
-                            this.error_name_message = '用户名以存在';
-                            this.error_name = true;
-                        }else{
-                            this.error_name = false
+
+            if (this.error_username === false) {
+                // 判断用户名是否重复注册
+                let url = '/usernames/' + this.username + '/count/'
+                let options = {responseType: 'json'}
+                axios.get(url, options)
+                    .then(response => {
+                        if (response.data.count === 1) {
+                            this.error_username_msg = '用户名已存在';
+                            this.error_username = true;
+                        } else {
+                            this.error_username = false;
                         }
                     })
-                .catch(error=>{
-                    console.log('发送失败',error.response);
-                })
+                    .catch(error => {
+                        console.log(error.response);
+                    })
             }
         },
-        // 4.2 校验密码
-        check_password(){
-            let re_password = /^[a-zA-Z0-9]{8,20}$/
-            if(re_password.test(this.password)){
+        check_password() {
+            let re = /^[0-9A-Za-z]{8,20}$/;
+            if (re.test(this.password)) {
                 this.error_password = false;
-            }else{
+            } else {
                 this.error_password = true;
             }
         },
-        // 4.3 检验确认密码
-        check_password2(){
-            let re_password2 = /^[a-zA-Z0-9_-]{5,20}$/;
-            if(re_password2.test(this.password2) && this.password2 === this.password){
-                this.error_password2 = false;
-            }else {
-                this.error_password2 = true;
+        check_confirm_pwd() {
+            if (this.password !== this.confirm_pwd) {
+                this.error_confirm_pwd = true;
+            } else {
+                this.error_confirm_pwd = false;
             }
         },
-        // 4.4 校验手机号
-        check_mobile(){
-            let re_mobile = /^1[3-9]\d{9}$/
-            if(re_mobile.test(this.mobile)){
+        check_mobile() {
+            let re = /^1[3-9]\d{9}$/;
+
+            if (re.test(this.mobile)) {
                 this.error_mobile = false;
-            }else {
-                this.error_mobile_message = '请输入正确的手机号码'
+            } else {
+                this.error_mobile_msg = '您输入的手机号格式不正确';
                 this.error_mobile = true;
             }
-         // 判断手机号是否重复注册
-            if(this.error_mobile === false){ //只有当用户输入的用户名满足条件才回去判断
-                let url_mobile = '/mobiles/' + this.mobile + '/count'
-                // 开始由前端发送ajax请求
-                axios.get(url_mobile,{responseType:'json'})
-                    // 成功时：
-                    .then(response=>{
-                        if(response.data.count === 1){
-                            this.error_mobile_message = '手机号已存在';
-                            this.error_mobile = true;
-                        }else{
+
+            if (this.error_mobile === false) {
+                // 校验手机号是否重复注册
+                let url = '/mobiles/' + this.mobile + '/count/'
+                let options = {responseType: 'json'}
+                axios.get(url, options)
+                    .then(response => {
+                        console.log(response.data)
+
+                        if (response.data.count === 1) {
+                            //    手机号重复注册
+                            this.error_mobile = true
+                            this.error_mobile_msg = '手机号码重复注册'
+                        } else {
                             this.error_mobile = false
                         }
                     })
-                .catch(error=>{
-                    console.log('发送失败',error.response);
-                })
+                    .catch(error => {
+                        console.log(error.response);
+                    })
             }
         },
-        // 校验图形验证码
-        check_image_code(){
-            if (this.image_code.length !== 4){
-                this.error_image_code_message = '请输入图形验证码'
+        check_image_code() {
+            if (this.image_code.length !== 4 ) {
+                this.error_image_code_msg = '请填写图片验证码';
                 this.error_image_code = true;
-            }else{
+            } else {
                 this.error_image_code = false;
             }
         },
-        // 4.5校验是否勾选协议
-        check_allow(){
-            if(this.allow){
-                this.error_allow = false;
-            }else{
+        check_allow() {
+            if (!this.allow) {
                 this.error_allow = true;
+            } else {
+                this.error_allow = false;
             }
         },
-        // 4.6 监听表单提交事件
-        on_submit(){
-            // 现在对以上的函数事件进行校验，通过执行函数，data中的数据会得到改变
-            this.check_username()
-            this.check_password()
-            this.check_password2()
-            this.check_mobile()
-            this.check_allow()
+        check_sms_code() {
+            if (this.sms_code.length !== 6) {
+                this.error_sms_code_message = '请填写短信验证码';
+                this.error_sms_code = true;
+            } else {
+                this.error_sms_code = false;
+            }
+        },
+        // 4.7发送邮箱（短信）验证码
+        send_sms_code(){
+            // 要避免恶意用户频繁的点击获取短信验证码的标签
+            if(this.send_flag === true){ //当厕所的门是关的（已经有人在里面了），就不进去（就进行return，不执行下面的代码）
+                return;
+            }
+            this.send_flag = true; //表示进来之后马上关门
+            // 检验数据：this.email 和 this.image_code (因为用户可能在没有填写邮箱账户和图形验证的情况之下点击发送邮箱验证码)
+            this.check_mobile();
+            this.check_image_code();
+            if(this.error_email === true || this.error_image_code === true){ // 如果有一个是有错误的就不继续执行下去
+                this.send_flag = false;
+                return;
+            }
+            // url中传入查询字符串，和后端逻辑进行配合使用，这里的字符串设置依据是后端的接受设置
+            let url = '/sms_codes/'+ this.mobile +'/?image_code=' + this.image_code +'&uuid=' + this.uuid;
+            axios.get(url,{responseType:'json'})
+            .then(response=>{
+                if(response.data.code === '0'){
+                    alert('验证码：' + response.data.sms_code);
+                // 显示倒计时60s效果
+                    let num = 60;
+                    let t =setInterval(() =>{
+                        if (num === 0){ // 倒计时结束时
+                            // 1.停止回调函数
+                            clearInterval(t);
+                            // 2.还原email_code_tip的显示文字
+                            this.sms_code_tip = '获取邮箱验证码';
+                            // 3.重新生成图形验证码
+                            this.generate_image_code();
+                            this.send_flag = false;  // 进行解锁，上完厕所后打开门
+                        }else{ // 正在倒计时
+                            num -= 1;
+                            this.sms_code_tip = num + '秒';
+                        }
 
-            // 只要有一个数据为true，即：有错误信息得到了展示，就要阻止表单提交
-            if(this.error_name === true || this.error_password === true ||
-                this.error_password2 === true || this.error_mobile === true || this.error_allow === true){
+                    },1000)
+                }else{
+                    if(response.data.code === '4001'){
+                        // 图形验证码错误
+                        this.error_image_code_msg = response.data.errmsg;
+                        this.error_image_code = true;
+                    }else{//短信验证码错误 4002
+                        this.error_sms_code_message = response.data.errmsg
+                        this.error_sms_code = true;
+                    }
+                    this.send_flag = false;
+                }
+            })
+            .catch(error=>{
+                console.log(error.response);
+                this.send_flag = false;
+            })
+        },
+        on_submit() {
+            this.check_username();
+            this.check_password();
+            this.check_confirm_pwd();
+            this.check_mobile();
+            this.check_allow();
+
+            if (this.error_username === true || this.error_password === true || this.error_confirm_pwd === true
+                || this.error_mobile === true || this.error_allow === true) {
+                // 禁用表单的提交
                 window.event.returnValue = false;
+                console.log('args error')
+            } else {
+                console.log('register')
             }
         },
-    }
-});app.mount('#app');
-// 通过id选择器找到绑定的HTML内容
+    },
 
+
+})
