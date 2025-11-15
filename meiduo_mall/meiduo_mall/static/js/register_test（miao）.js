@@ -151,7 +151,11 @@ let vm = new Vue({
         },
         // 4.7发送邮箱（短信）验证码
         send_sms_code(){
-            // 要避免恶意用户频繁的点击获取短信验证码的标签
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // 设计一个可以使用容联云平台的测试手机号
+            if (this.mobile === '18379309798'){
+                // 从这里开始要重新进行构建
+                  // 要避免恶意用户频繁的点击获取短信验证码的标签
             if(this.send_flag === true){ //当厕所的门是关的（已经有人在里面了），就不进去（就进行return，不执行下面的代码）
                 return;
             }
@@ -164,11 +168,10 @@ let vm = new Vue({
                 return;
             }
             // url中传入查询字符串，和后端逻辑进行配合使用，这里的字符串设置依据是后端的接受设置
-            let url = '/sms_codes/'+ this.mobile +'/?image_code=' + this.image_code +'&uuid=' + this.uuid;
+            let url = '/sms_codes/miao/'+ this.mobile +'/?image_code=' + this.image_code +'&uuid=' + this.uuid;
             axios.get(url,{responseType:'json'})
             .then(response=>{
                 if(response.data.code === '0'){
-                    alert('验证码：' + response.data.sms_code);
                 // 显示倒计时60s效果
                     let num = 60;
                     let t =setInterval(() =>{
@@ -176,7 +179,7 @@ let vm = new Vue({
                             // 1.停止回调函数
                             clearInterval(t);
                             // 2.还原email_code_tip的显示文字
-                            this.sms_code_tip = '获取邮箱验证码';
+                            this.sms_code_tip = '获取验证码';
                             // 3.重新生成图形验证码
                             this.generate_image_code();
                             this.send_flag = false;  // 进行解锁，上完厕所后打开门
@@ -202,6 +205,62 @@ let vm = new Vue({
                 console.log(error.response);
                 this.send_flag = false;
             })
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            else{
+               // 要避免恶意用户频繁的点击获取短信验证码的标签
+            if(this.send_flag === true){ //当厕所的门是关的（已经有人在里面了），就不进去（就进行return，不执行下面的代码）
+                return;
+            }
+            this.send_flag = true; //表示进来之后马上关门
+            // 检验数据：this.email 和 this.image_code (因为用户可能在没有填写邮箱账户和图形验证的情况之下点击发送邮箱验证码)
+            this.check_mobile();
+            this.check_image_code();
+            if(this.error_email === true || this.error_image_code === true){ // 如果有一个是有错误的就不继续执行下去
+                this.send_flag = false;
+                return;
+            }
+            // url中传入查询字符串，和后端逻辑进行配合使用，这里的字符串设置依据是后端的接受设置
+            let url = '/sms_codes/'+ this.mobile +'/?image_code=' + this.image_code +'&uuid=' + this.uuid;
+            axios.get(url,{responseType:'json'})
+            .then(response=>{
+                if(response.data.code === '0'){
+                    alert('验证码：' + response.data.sms_code);
+                // 显示倒计时60s效果
+                    let num = 60;
+                    let t =setInterval(() =>{
+                        if (num === 0){ // 倒计时结束时
+                            // 1.停止回调函数
+                            clearInterval(t);
+                            // 2.还原email_code_tip的显示文字
+                            this.sms_code_tip = '获取验证码';
+                            // 3.重新生成图形验证码
+                            this.generate_image_code();
+                            this.send_flag = false;  // 进行解锁，上完厕所后打开门
+                        }else{ // 正在倒计时
+                            num -= 1;
+                            this.sms_code_tip = num + '秒';
+                        }
+
+                    },1000)
+                }else{
+                    if(response.data.code === '4001'){
+                        // 图形验证码错误
+                        this.error_image_code_msg = response.data.errmsg;
+                        this.error_image_code = true;
+                    }else{//短信验证码错误 4002
+                        this.error_sms_code_message = response.data.errmsg
+                        this.error_sms_code = true;
+                    }
+                    this.send_flag = false;
+                }
+            })
+            .catch(error=>{
+                console.log(error.response);
+                this.send_flag = false;
+            })
+            }
+
         },
         on_submit() {
             this.check_username();
