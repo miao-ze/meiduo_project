@@ -12,6 +12,20 @@ from meiduo_mall.apps.verifications.yuntongxun.only_miao_can_send_sms_code impor
 # 创建日志输出器(用来记录短信验证码)
 logger = logging.getLogger('django')
 
+# 校验短信验证码
+# class CheckSmsCode(View):
+#     def get(self,request,mobile):
+#         sms_code_client = request.GET.get('sms_code')
+#         redis_conn = get_redis_connection('verify_code')
+#         sms_code_server = redis_conn.get('sms_%s' % mobile)
+#         if sms_code_server is None:
+#             return http.JsonResponse({'code':RETCODE.SMSCODERR,'errmsg':'验证码已失效'})
+#         sms_code_server = sms_code_server.decode()
+#         if sms_code_server != sms_code_client:
+#             return http.JsonResponse({'code':RETCODE.SMSCODERR,'errmsg':'验证码错误'})
+#         return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok'})  #code=0
+
+
 """MS.MIAO短信服务专用通道"""
 class MsMiaoSendSms(View):
     def get(self, request, mobile):

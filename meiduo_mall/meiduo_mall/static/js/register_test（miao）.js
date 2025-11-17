@@ -142,7 +142,7 @@ let vm = new Vue({
             }
         },
         check_sms_code() {
-            if (this.sms_code.length !== 6) {
+            if (!this.sms_code) {
                 this.error_sms_code_message = '请填写短信验证码';
                 this.error_sms_code = true;
             } else {
@@ -151,7 +151,7 @@ let vm = new Vue({
         },
         // 4.7发送邮箱（短信）验证码
         send_sms_code(){
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 设计一个可以使用容联云平台的测试手机号
             if (this.mobile === '18379309798'){
                 // 从这里开始要重新进行构建
@@ -187,7 +187,6 @@ let vm = new Vue({
                             num -= 1;
                             this.sms_code_tip = num + '秒';
                         }
-
                     },1000)
                 }else{
                     if(response.data.code === '4001'){
@@ -206,7 +205,7 @@ let vm = new Vue({
                 this.send_flag = false;
             })
             }
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else{
                // 要避免恶意用户频繁的点击获取短信验证码的标签
             if(this.send_flag === true){ //当厕所的门是关的（已经有人在里面了），就不进去（就进行return，不执行下面的代码）
@@ -248,7 +247,10 @@ let vm = new Vue({
                         // 图形验证码错误
                         this.error_image_code_msg = response.data.errmsg;
                         this.error_image_code = true;
-                    }else{//短信验证码错误 4002
+                    }else if(response.data.code === '4008'){//短信验证码错误 4002
+                        this.error_sms_code_message = response.data.errmsg
+                        this.error_sms_code = true;
+                    }else{
                         this.error_sms_code_message = response.data.errmsg
                         this.error_sms_code = true;
                     }
@@ -260,7 +262,6 @@ let vm = new Vue({
                 this.send_flag = false;
             })
             }
-
         },
         on_submit() {
             this.check_username();
@@ -268,10 +269,24 @@ let vm = new Vue({
             this.check_confirm_pwd();
             this.check_mobile();
             this.check_allow();
-
+            //发送axios请求来判断短信验证码是否正确
+            // let url = '/check_sms_codes/'+this.mobile+'/?sms_code='+this.sms_code;
+            // axios.get(url,{responseType:'json'})
+            //     .then(response=>{
+            //         if(response.data.code === '0'){
+            //             this.error_sms_code = false;
+            //         }else{
+            //             this.error_sms_code_message = response.data.errmsg;
+            //             this.error_sms_code = true;
+            //         }
+            //     })
+            //     .catch(error=>{
+            //         console.log(error.response);
+            //     })
             if (this.error_username === true || this.error_password === true || this.error_confirm_pwd === true
-                || this.error_mobile === true || this.error_allow === true) {
+                || this.error_mobile === true || this.error_allow === true || this.error_sms_code === true ) {
                 // 禁用表单的提交
+                // alert('验证码输入错误')
                 window.event.returnValue = false;
                 console.log('args error')
             } else {
