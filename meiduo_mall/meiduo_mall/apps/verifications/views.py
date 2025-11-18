@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.views import View
 from django_redis import get_redis_connection
 from django import http
@@ -7,7 +6,7 @@ import random,logging
 from meiduo_mall.apps.verifications.libs.captcha.captcha import captcha
 from meiduo_mall.apps.verifications import constants
 from utils.response_code import RETCODE
-from meiduo_mall.apps.verifications.yuntongxun.only_miao_can_send_sms_code import send_sms_code
+from meiduo_project.celery_tasks.sms.tasks import send_sms_code
 
 # 创建日志输出器(用来记录短信验证码)
 logger = logging.getLogger('django')
@@ -53,7 +52,8 @@ class MsMiaoSendSms(View):
         # 进行发送短信验证码
         sms_code = '%04d' % random.randint(0, 9999)
         logger.info(sms_code)  # 进行短信验证码的日志记录
-        send_sms_code(mobile=mobile, sms_code=sms_code) #自定义使用容联云进行发送
+        # 使用celery来发送短信验证码
+        send_sms_code.delay(mobile, sms_code)  #不要忘记使用delay
         # 创建redis管道
         pl = redis_conn.pipeline()
         pl.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)  # 300秒

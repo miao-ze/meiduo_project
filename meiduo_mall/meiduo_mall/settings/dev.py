@@ -17,22 +17,18 @@ import sys
 from os.path import dirname
 from pathlib import Path
 
-from meiduo_mall.apps import users
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print('关于base_dir的路径：',BASE_DIR)
-
-print('BASE_DIR的路径：', BASE_DIR)
-
-print('dirname(BASE_DIR)的路径：', dirname(BASE_DIR))
-
+BASE_DIR_Celery =  Path(__file__).resolve().parent.parent.parent.parent
 
 # 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
-# sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\本地git仓库\\meiduo_project\\meiduo_mall\\meiduo_mall\\apps') #但这个方式太复杂了，且不够灵活
+# sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\github\\meiduo3.0\\meiduo_project') #但这个方式太复杂了，且不够灵活
 
 # 最终选择这个方式进行添加系统的导包路径（用BASE_DIR来进行导包）
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
+sys.path.insert(0,os.path.join(BASE_DIR_Celery))
 
 # print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production

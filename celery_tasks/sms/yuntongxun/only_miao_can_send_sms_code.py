@@ -14,9 +14,9 @@ appId = '2c94811c9860a9c401995179ad492897'  #为上线
 #############################################################################################
 
 sdk = SmsSDK(accId, accToken, appId)
-def send_sms_code(mobile,sms_code):
+def send_sms_codes(mobile,sms_code):
     datas = (sms_code, '5')
     sdk.sendMessage(tid='1',datas=datas,mobile=mobile)
 
 if __name__ == '__main__':
-    send_sms_code(mobile='18379309798',sms_code='1234')
+    send_sms_codes(mobile='18379309798',sms_code='1234')
