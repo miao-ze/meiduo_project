@@ -17,6 +17,7 @@ import sys
 from os.path import dirname
 from pathlib import Path
 
+from django.conf.global_settings import AUTHENTICATION_BACKENDS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -260,3 +261,9 @@ LOGGING = {
 
 # 指定自定义的的用户模型类：语法--> '子应用.用户模型类' (直接忽略models.py)
 AUTH_USER_MODEL = "users.User"
+
+# 配置django的用户认证后端，不用系统自带的，改用在users.utils中的，这样就可以通过手机号和用户名进行判断登录了
+AUTHENTICATION_BACKENDS = ['meiduo_mall.apps.users.utils.UsernameMobileBackend']
+
+# 判断用户是否登录后，指定未登录用户重定向的地址
+LOGIN_URL = '/login'
