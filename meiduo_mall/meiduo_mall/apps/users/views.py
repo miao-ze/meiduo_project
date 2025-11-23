@@ -37,7 +37,7 @@ class LogoutView(View):
 class LoginView(View):
     # 提供用户登录页面
     def get(self, request):
-        return render(request, 'login.html')
+        return render(request, 'login（miao）.html')
     # 实现用户的登录的逻辑
     def post(self, request):
         # 接受参数
@@ -56,7 +56,7 @@ class LoginView(View):
         # user.check_password(password)
         user = authenticate(username=username, password=password)
         if user is None:
-            return render(request, 'login.html',{'account_errmsg':'账号或密码错误'})
+            return render(request, 'login（miao）.html',{'account_errmsg':'账号或密码错误'})
         # 状态保持
         login(request, user)
         # 判断remembered的存在，来确定状态保持的周期

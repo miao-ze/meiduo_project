@@ -28,6 +28,8 @@ urlpatterns = [
     path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),
     # verifications
     path('',include('meiduo_mall.apps.verifications.urls',namespace='verifications')),
+    # oauth
+    path('',include('meiduo_mall.apps.oauth.urls',namespace='oauth')),
 
     # 首页信息：这里的namespace使用方法一的方式来进行
     # path('', include(('meiduo_mall.apps.contents.urls', 'contents'), namespace='contents')),

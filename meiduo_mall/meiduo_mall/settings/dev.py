@@ -14,15 +14,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 import sys
-from os.path import dirname
 from pathlib import Path
-
-from django.conf.global_settings import AUTHENTICATION_BACKENDS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # print('关于base_dir的路径：',BASE_DIR)
 BASE_DIR_Celery =  Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR_all =  Path(__file__).resolve().parent.parent.parent.parent.parent
 
 # 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
 # sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\github\\meiduo3.0\\meiduo_project') #但这个方式太复杂了，且不够灵活
@@ -30,6 +28,8 @@ BASE_DIR_Celery =  Path(__file__).resolve().parent.parent.parent.parent
 # 最终选择这个方式进行添加系统的导包路径（用BASE_DIR来进行导包）
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 sys.path.insert(0,os.path.join(BASE_DIR_Celery))
+sys.path.insert(0,os.path.join(BASE_DIR_all))
+
 
 # print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'users',
     'contents',
     'verifications',
+    'oauth',        #第三方的登录
 
 ]
 
@@ -267,3 +268,8 @@ AUTHENTICATION_BACKENDS = ['meiduo_mall.apps.users.utils.UsernameMobileBackend']
 
 # 判断用户是否登录后，指定未登录用户重定向的地址
 LOGIN_URL = '/login'
+
+# QQ登录的配置参数
+QQ_CLIENT_ID = '101474184'
+QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
