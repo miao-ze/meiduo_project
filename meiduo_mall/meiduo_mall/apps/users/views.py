@@ -6,21 +6,60 @@ from django import http
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate  #导入django自带的用户认证系统
 from django.contrib.auth import logout
-import re
+import re,json,logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from meiduo_mall.apps.users.models import User
 from django.contrib.auth import login
 from utils.response_code import RETCODE
+from utils.views import LoginRequiredJSONMixin
+from meiduo_project.celery_tasks.email.tasks import send_verify_email
 # Create your views here.
+
+# 创建日志输出器
+logger = logging.getLogger('django')
+
+"""添加邮箱"""
+class EmailView(LoginRequiredJSONMixin,View):
+    def put(self,request): # put表示更新数据，更新数据时使用
+        # 取出email数据
+        json_str = request.body.decode() #先拿出原始数据：注意body类型是bytes
+        json_dict = json.loads(json_str) #转化成字典
+        email = json_dict.get('email')
+        # 对email进行校验
+        if not re.match(r'^[a-zA-Z0-9_-]{5,20}@(192|163|qq)\.com$',email):
+            return http.HttpResponseForbidden('参数email有误')
+        # 将用户输入的邮箱保存到用户模型数据库的email字段中:
+
+        try: # 进行数据库操作时都要进行try
+            request.user.email = email
+            request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code':RETCODE.DBERR,'errmsg':'添加邮箱失败'})
+
+        # 发送邮箱验证码
+        send_verify_email()
+        # 响应结果
+        return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok'})
 
 """用户中心页面"""
 class UserInfoView(LoginRequiredMixin,View):
+    # 关于：LoginRequiredMixin
+    # login_url = '/login'   # 没登陆是要重定向的地址：可以在dev系统环境中进行配置:LOGIN_URL = '/login'
+    # login_redirect = 'redirect_to'    # 默认为"next" 如：如果是没有登录的状态时点击用户中心时，在login_url所提供的登录页面的url路径是：www.meiduo.site/login/?next=/info/
     # 提供用户中心页面
     def get(self, request):
-        # login_url = '/login'   # 没登陆是要重定向的地址：可以在dev系统环境中进行配置:LOGIN_URL = '/login'
-        # login_redirect = 'redirect_to'    # 默认为"next" 如：如果是没有登录的状态时点击用户中心时，在login_url所提供的登录页面的url路径是：www.meiduo.site/login/?next=/info/
-        return render(request,'user_center_info（miao）.html')
+        #Django的AuthenticationMiddleware中间件会在处理请求时，
+        #根据session中存储的用户ID，去数据库的用户表（默认是auth_user表，或自定义的用户模型表）中查询对应的用户对象，
+        #然后将其赋值给request.user
+        context = {
+            'username':request.user.username,
+            'mobile':request.user.mobile,
+            'email':request.user.email,
+            'email_active':request.user.email_active,
+        }
+        return render(request,'user_center_info（miao）.html',context)
 
 """用户退出登录"""
 class LogoutView(View):

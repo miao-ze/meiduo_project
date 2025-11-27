@@ -2,6 +2,7 @@ let vm = new Vue({
     el: '#app',
     delimiters: ['[[', ']]'],
     data: {
+        // 此处的四个信息都是从前端的html中得到的
         username: username,
         mobile: mobile,
         email: email,
@@ -26,7 +27,7 @@ let vm = new Vue({
     methods: {
         // 检查email格式
         check_email() {
-            let re = /^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
+            let re = /^[a-zA-Z0-9_-]{5,20}@(192|163|qq)\.com$/;
             if (re.test(this.email)) {
                 this.error_email = false;
             } else {
@@ -43,7 +44,7 @@ let vm = new Vue({
             // 检查email格式
             this.check_email();
 
-            if (this.error_email == false) {
+            if (this.error_email === false) {
                 let url = '/emails/';
                 axios.put(url, {
                     email: this.email
@@ -54,11 +55,11 @@ let vm = new Vue({
                     responseType: 'json'
                 })
                     .then(response => {
-                        if (response.data.code == '0') {
+                        if (response.data.code === '0') {
                             this.set_email = false;
                             this.send_email_btn_disabled = true;
                             this.send_email_tip = '已发送验证邮件';
-                        } else if (response.data.code == '4101') {
+                        } else if (response.data.code === '4101') {
                             location.href = '/login/?next=/info/';
                         } else {
                             console.log(response);
