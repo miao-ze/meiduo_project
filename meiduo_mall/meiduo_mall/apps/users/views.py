@@ -39,7 +39,8 @@ class EmailView(LoginRequiredJSONMixin,View):
             return http.JsonResponse({'code':RETCODE.DBERR,'errmsg':'添加邮箱失败'})
 
         # 发送邮箱验证码
-        send_verify_email()
+        verity_url = 'www.meiduo.site'
+        send_verify_email.delay(email,verity_url)
         # 响应结果
         return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok'})
 

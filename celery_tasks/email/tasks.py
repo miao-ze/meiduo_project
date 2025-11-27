@@ -16,6 +16,6 @@ def send_verify_email(to_email,verify_url):
                    '<p><a href="%s">%s</a></p>' % (to_email, verify_url, verify_url)
 
 
-    send_mail(subject,'',settings.EMAIL_FROM,[],html_message)
-    pass
+    send_mail(subject,'',settings.EMAIL_FROM,[to_email],html_message=html_message)
+
 

@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # print('关于base_dir的路径：',BASE_DIR)
 BASE_DIR_Celery =  Path(__file__).resolve().parent.parent.parent.parent
 BASE_DIR_all =  Path(__file__).resolve().parent.parent.parent.parent.parent
+BASE_DIR_Celery2 =  Path(__file__).resolve().parent.parent.parent
+
 
 # 为了简化子应用的注册现在把meiduo_mall中的apps路径进行导入，这样注册子应用就简单了
 # sys.path.insert(1,'C:\\Users\\wyys2\\Desktop\\github\\meiduo3.0\\meiduo_project') #但这个方式太复杂了，且不够灵活
@@ -29,7 +31,7 @@ BASE_DIR_all =  Path(__file__).resolve().parent.parent.parent.parent.parent
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
 sys.path.insert(0,os.path.join(BASE_DIR_Celery))
 sys.path.insert(0,os.path.join(BASE_DIR_all))
-
+sys.path.insert(1,os.path.join(BASE_DIR_Celery2))
 
 # print('系统的导包路劲为：',sys.path[:2])
 # Quick-start development settings - unsuitable for production
