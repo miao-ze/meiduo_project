@@ -25,9 +25,11 @@ celery_app = Celery('meiduo')
 celery_app.config_from_object('celery_tasks.config')
 
 # 注册任务
-celery_app.autodiscover_tasks(['celery_tasks.sms'])
+celery_app.autodiscover_tasks(['celery_tasks.sms','celery_tasks.email'])
 
 
-# 启动步骤：celery -A celery_tasks.main worker -l info -P gevent
+# 启动步骤：celery -A celery_tasks.main worker -l info -P gevent  (还可以通过-c 来自定义开启的进程数)/(还可以加-P eventlet -c)开协程,但要安装eventlet库
+
+# 默认一个cpu开辟4个线程
 # 切换目录：在仓库根目录下，使用 cd 命令切换到能看到 celery_tasks 包的目录。
 # 执行命令：在终端输入 “celery -A celery_tasks.main worker -l info -P gevent” 命令，执行后 Celery 会加载配置、注册任务，知道中间人位置和要执行的任务。

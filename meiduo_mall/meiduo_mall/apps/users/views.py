@@ -14,10 +14,31 @@ from django.contrib.auth import login
 from utils.response_code import RETCODE
 from utils.views import LoginRequiredJSONMixin
 from meiduo_project.celery_tasks.email.tasks import send_verify_email
-# Create your views here.
+from .utils import generate_verify_email_url,check_verify_email_token
 
 # 创建日志输出器
 logger = logging.getLogger('django')
+
+
+"""验证邮箱的激活链接"""
+class VerifyEmailView(View):
+    def get(self,request):
+        # 获取参数：token
+        token = request.GET.get('token')
+        # 验证参数：参数的有效期是1天
+        if not token:
+            return http.HttpResponseForbidden('token已过期')
+        # 从token中取出用户的信息，（这一步的操作封装到了check_verify_email_token中,其返回的是user对象）并把email_active该为ture
+        user = check_verify_email_token(token)
+        if not user:
+            return http.HttpResponseBadRequest('无效的token')
+        try:# 把email_active该为ture
+            user.email_active = True
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.HttpResponseServerError('激活邮箱失败')
+        return redirect(reverse('users:info'))
 
 """添加邮箱"""
 class EmailView(LoginRequiredJSONMixin,View):
@@ -39,7 +60,7 @@ class EmailView(LoginRequiredJSONMixin,View):
             return http.JsonResponse({'code':RETCODE.DBERR,'errmsg':'添加邮箱失败'})
 
         # 发送邮箱验证码
-        verity_url = 'www.meiduo.site'
+        verity_url = generate_verify_email_url(request.user) #
         send_verify_email.delay(email,verity_url)
         # 响应结果
         return http.JsonResponse({'code':RETCODE.OK,'errmsg':'ok'})

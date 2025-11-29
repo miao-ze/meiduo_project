@@ -18,6 +18,8 @@ urlpatterns = [
     re_path(r'^info/$',views.UserInfoView.as_view(),name='info'),
     # 添加邮箱
     re_path(r'^emails/$',views.EmailView.as_view()),
+    # 邮箱激活链接的视图
+    re_path(r'^emails/verification/$',views.VerifyEmailView.as_view()),
     
 ]
 
