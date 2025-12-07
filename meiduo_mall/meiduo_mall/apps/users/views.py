@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django import http
+from django.views.generic import CreateView
 from django_redis import get_redis_connection
 from django.contrib.auth import authenticate  #导入django自带的用户认证系统
 from django.contrib.auth import logout
@@ -15,10 +16,88 @@ from utils.response_code import RETCODE
 from utils.views import LoginRequiredJSONMixin
 from meiduo_project.celery_tasks.email.tasks import send_verify_email
 from .utils import generate_verify_email_url,check_verify_email_token
+from meiduo_mall.apps.users.models import Address
+from . import constants
 
 # 创建日志输出器
 logger = logging.getLogger('django')
 
+
+"""新增用户收货地址"""
+class AddressCreateView(LoginRequiredJSONMixin,View):
+    def post(self,request):
+
+        # 判断用户地址数量是否超过上限
+        # count = Address.objects.filter(user=request.user).count() # 基础查询
+        count = request.user.address.count()                        # 关联查询
+        if count > constants.USER_ADDRESS_COUNTS_LIMIT: # count > 20
+            return http.JsonResponse({'code':RETCODE.THROTTLINGERR,'errmsg':'超出用户地址上限'}) # code=‘4002’
+
+        # 接受前端的表单参数
+        json_str = request.body.decode()   #将betys字段转成字符串
+        json_dict = json.loads(json_str)   #在转成字典
+        receiver = json_dict.get('receiver')
+        province_id = json_dict.get('province_id')
+        city_id = json_dict.get('city_id')
+        district_id = json_dict.get('district_id')
+        place = json_dict.get('place')
+        mobile = json_dict.get('mobile')
+        tel = json_dict.get('tel')
+        email = json_dict.get('email')
+        # 校验参数
+        if not all([receiver,province_id,city_id,district_id,place,mobile]):
+            return http.HttpResponseForbidden('缺少必传参数')
+        if not re.match(r'^1[3-9]\d{9}$', mobile):
+            return http.HttpResponseForbidden('参数mobile有误')
+        if tel:
+            if not re.match(r'^(0[0-9]{2,3}-)([2-9][0-9]{6,7})+(-[0-9]{1,4})?$',tel):
+                return http.HttpResponseForbidden('参数tel有误')
+        if email:
+            if not re.match(r'^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,6}$',email):
+                return http.HttpResponseForbidden('参数email有误')
+
+        # 保存用户传入的地址信息
+        try:
+            address = Address.objects.create(
+                user = request.user,
+                title = receiver, # 标题默认就是收货人
+                receiver = receiver,
+                province_id = province_id,
+                city_id = city_id,
+                district_id = district_id,
+                place = place,
+                mobile = mobile,
+                tel = tel,
+                email = email,
+                # is_deleted = False, # 默认就是False所以不用赋值
+            )
+            # 如果没用默认地址我们需要指定用户地址
+            if not request.user.default_address:
+                request.user.default_address = address
+                request.user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code':RETCODE.DBERR,'errmsg':'新增地址失败'})
+        # 构造新增地址字典数据
+        address_dict = {
+            'id': address.id,
+            'title': address.title,
+            'receiver': address.receiver,
+            'province': address.province.name,
+            'city': address.city.name,
+            'district': address.district.name,
+            'place': address.place,
+            'mobile': address.mobile,
+            'tel': address.tel,
+            'email': address.email,
+        }
+        # 响应新增地址结果，需要将新增的地址返回给前端渲染
+        return http.JsonResponse({'code':RETCODE.OK,'errmsg':'新增地址成功','address':address_dict})
+
+"""用户收货地址"""
+class AddressView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request,'user_center_site（miao）.html')
 
 """验证邮箱的激活链接"""
 class VerifyEmailView(View):
@@ -48,7 +127,7 @@ class EmailView(LoginRequiredJSONMixin,View):
         json_dict = json.loads(json_str) #转化成字典
         email = json_dict.get('email')
         # 对email进行校验
-        if not re.match(r'^[a-zA-Z0-9_-]{5,20}@(192|163|qq)\.com$',email):
+        if not re.match(r'^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,6}$',email):
             return http.HttpResponseForbidden('参数email有误')
         # 将用户输入的邮箱保存到用户模型数据库的email字段中:
 

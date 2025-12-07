@@ -30,10 +30,10 @@
 					<span>|</span>
 					<a href="#">我的购物车</a>
 					<span>|</span>
-					<a href="user_center_order.html">我的订单</a>
+					<a href="#">我的订单</a>
 				</div>
 			</div>
-		</div>		
+		</div>
 	</div>
 	<div class="search_bar clearfix">
 		<a href="{{ url('contents:index') }}" class="logo fl"><img src="{{ static('images/logo.png') }}"></a>
@@ -48,7 +48,7 @@
 				<li><a href="#">美妆个护</a></li>
 				<li><a href="#">买2免1</a></li>
 			</ul>
-		</div>		
+		</div>
 	</div>
 	<div class="main_con clearfix">
 		<div class="left_menu_con clearfix">
@@ -56,43 +56,75 @@
 			<ul>
 				<li><a href="{{ url('users:info') }}">· 个人信息</a></li>
 				<li><a href="{{ url('users:address') }}" class="active">· 收货地址</a></li>
-                <li><a href="user_center_order.html">· 全部订单</a></li>
-				<li><a href="user_center_pass.html">· 修改密码</a></li>
+                <li><a href="#">· 全部订单</a></li>
+				<li><a href="#">· 修改密码</a></li>
 			</ul>
 		</div>
-        <div class="right_content clearfix" v-cloak>
+
+
+        <div class="right_content clearfix" v-cloak="">
             <div class="site_top_con">
                 <a @click="show_add_site">新增收货地址</a>
-                <span>你已创建了<b>[[ addresses.length ]]</b>个收货地址，最多可创建<b>20</b>个</span>
+                <span>你已创建了<b>2</b>个收货地址，最多可创建<b>20</b>个</span>
             </div>
-            <div class="site_con" v-for="(address, index) in addresses">
+            <div class="site_con">
                 <div class="site_title">
-                    <div v-if="edit_title_index===index">
-                        <input v-model="new_title" type="text" name="">
-                        <input @click="save_title(index)" type="button" name="" value="保 存">
-                        <input @click="cancel_title(index)" type="reset" name="" value="取 消">
-                    </div>
-                    <div>
-                        <h3>[[ address.title ]]</h3>
-                        <a @click="show_edit_title(index)" class="edit_title"></a>
-                    </div>
-                    <em v-if="address.id===default_address_id">默认地址</em>
-                    <span @click="delete_address(index)">×</span>
+                    <h3>传智博客 北京</h3>
+                    <a href="javascript:" class="edit_icon"></a>
+                    <em>默认地址</em>
+                    <span class="del_site">x</span>
                 </div>
                 <ul class="site_list">
-                    <li><span>收货人：</span><b>[[ address.receiver ]]</b></li>
-                    <li><span>所在地区：</span><b>[[ address.province ]] [[address.city]] [[ address.district ]]</b></li>
-                    <li><span>地址：</span><b>[[ address.place ]]</b></li>
-                    <li><span>手机：</span><b>[[ address.mobile ]]</b></li>
-                    <li><span>固定电话：</span><b>[[ address.tel ]]</b></li>
-                    <li><span>电子邮箱：</span><b>[[ address.email ]]</b></li>
+                    <li><span>收货人：</span><b>缪泽平</b></li>
+                    <li><span>所在地区：</span><b>江西省上饶市</b></li>
+                    <li><span>地址：</span><b>广信区</b></li>
+                    <li><span>手机：</span><b>183****9798</b></li>
+                    <li><span>固定电话：</span><b>3232423423</b></li>
+                    <li><span>电子邮箱：</span><b>miao@qq.com</b></li>
                 </ul>
                 <div class="down_btn">
-                    <a v-if="address.id!=default_address_id" @click="set_default(index)">设为默认</a>
-                    <a @click="show_edit_site(index)" class="edit_icon">编辑</a>
+                    <a href="javascript:" class="set_default">设为默认</a>
+                    <a href="javascript:" class="edit_icon">编辑</a>
                 </div>
             </div>
         </div>
+
+
+{#        <div class="right_content clearfix" >#}
+{#            <div class="site_top_con">#}
+{#                <a @click="show_add_site">新增收货地址</a>#}
+{#                <span>你已创建了<b>[[ addresses.length ]]</b>个收货地址，最多可创建<b>20</b>个</span>#}
+{#            </div>#}
+{#            <div class="site_con" v-for="(address, index) in addresses">#}
+{#                <div class="site_title">#}
+{#                    <div v-if="edit_title_index===index">#}
+{#                        <input v-model="new_title" type="text" name="">#}
+{#                        <input @click="save_title(index)" type="button" name="" value="保 存">#}
+{#                        <input @click="cancel_title(index)" type="reset" name="" value="取 消">#}
+{#                    </div>#}
+{#                    <div>#}
+{#                        <h3>[[ address.title ]]</h3>#}
+{#                        <a @click="show_edit_title(index)" class="edit_title"></a>#}
+{#                    </div>#}
+{#                    <em v-if="address.id===default_address_id">默认地址</em>#}
+{#                    <span @click="delete_address(index)">×</span>#}
+{#                </div>#}
+{#                <ul class="site_list">#}
+{#                    <li><span>收货人：</span><b>[[ address.receiver ]]</b></li>#}
+{#                    <li><span>所在地区：</span><b>[[ address.province ]] [[address.city]] [[ address.district ]]</b></li>#}
+{#                    <li><span>地址：</span><b>[[ address.place ]]</b></li>#}
+{#                    <li><span>手机：</span><b>[[ address.mobile ]]</b></li>#}
+{#                    <li><span>固定电话：</span><b>[[ address.tel ]]</b></li>#}
+{#                    <li><span>电子邮箱：</span><b>[[ address.email ]]</b></li>#}
+{#                </ul>#}
+{#                <div class="down_btn">#}
+{#                    <a v-if="address.id!=default_address_id" @click="set_default(index)">设为默认</a>#}
+{#                    <a @click="show_edit_site(index)" class="edit_icon">编辑</a>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+
 	</div>
 	<div class="footer">
 		<div class="foot_link">
@@ -102,12 +134,12 @@
 			<span>|</span>
 			<a href="#">招聘人才</a>
 			<span>|</span>
-			<a href="#">友情链接</a>		
+			<a href="#">友情链接</a>
 		</div>
 		<p>CopyRight © 2016 北京美多商业股份有限公司 All Rights Reserved</p>
 		<p>电话：010-****888    京ICP备*******8号</p>
 	</div>
-	<div class="pop_con" v-show="is_show_edit" v-cloak>
+	<div class="pop_con" v-show="is_show_edit" v-cloak="">
 		<div class="site_con site_pop">
             <div class="site_pop_title">
                 <h3>新增收货地址</h3>
@@ -159,10 +191,12 @@
 	</div>
 	</div>
     <script type="text/javascript">
-		let addresses = {{ addresses | safe }};
-		let default_address_id = {{ default_address_id }};
+		{#let addresses = {{ addresses | safe }};#}
+		{#let default_address_id = {{ default_address_id }};#}
+        let addresses = "";
+		let default_address_id = "";
     </script>
 	<script type="text/javascript" src="{{ static('js/common.js') }}"></script>
-	<script type="text/javascript" src="{{ static('js/user_center_site.js') }}"></script>
+	<script type="text/javascript" src="{{ static('js/user_center_site（miao）.js') }}"></script>
 </body>
 </html>

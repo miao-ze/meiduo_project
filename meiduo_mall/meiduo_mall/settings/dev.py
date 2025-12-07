@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'contents',
     'verifications',
     'oauth',        #第三方的登录
+    'areas',        #省市区三级联动
 
 ]
 

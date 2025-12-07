@@ -20,6 +20,10 @@ urlpatterns = [
     re_path(r'^emails/$',views.EmailView.as_view()),
     # 邮箱激活链接的视图
     re_path(r'^emails/verification/$',views.VerifyEmailView.as_view()),
+    # 展示收货地址
+    re_path(r'addresses/$',views.AddressView.as_view(),name='address'),
+    # 新增收货地址
+    re_path(r'^addresses/create/$',views.AddressCreateView.as_view()),
     
 ]
 
